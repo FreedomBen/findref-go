@@ -89,5 +89,6 @@ func main() {
 		}
 	}
 
+	// TODO: Switch to powerwalk for performance:  https://github.com/stretchr/powerwalk
 	filepath.Walk(rootDir, processFile)
 }
