@@ -3,10 +3,10 @@ package main
 import "flag"
 import "fmt"
 import (
+	"bufio"
 	"os"
 	"path/filepath"
 	"regexp"
-	"bufio"
 	"strconv"
 )
 
@@ -30,8 +30,8 @@ func usageAndExit() {
 }
 
 func debug(message string) {
-    if Debug {
-        fmt.Println(Green + message + Restore)
+	if Debug {
+		fmt.Println(Green + message + Restore)
 	}
 }
 
@@ -62,17 +62,17 @@ func processFile(path string, info os.FileInfo, err error) error {
 		for scanner.Scan() {
 			line := scanner.Bytes()
 			for _, el := range line {
-			    if el == 0 {
-			    	// This is a binary file.  Skip it!
-			    	debug("Not processing binary file: " + path)
-			        return nil
+				if el == 0 {
+					// This is a binary file.  Skip it!
+					debug("Not processing binary file: " + path)
+					return nil
 				}
 			}
 			lineNumber++
 			matchIndex := matchRegex.FindIndex(line)
-		    if matchIndex != nil {
-		        // we have a match! loc == nil means no match so just ignore that case
-		        printMatch(path, lineNumber, line, matchIndex)
+			if matchIndex != nil {
+				// we have a match! loc == nil means no match so just ignore that case
+				printMatch(path, lineNumber, line, matchIndex)
 			}
 		}
 
