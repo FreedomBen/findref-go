@@ -9,7 +9,7 @@ GO_VERSION = '1.9-alpine'.freeze
 OSES_ARCHES = {
   'linux' => %w(amd64 386 arm arm64),
   'windows' => %w(amd64 386),
-  'darwin' => %w(amd64)
+  'darwin' => %w(amd64 386)
 }.freeze
 
 RED = "\033[0;31m".freeze
