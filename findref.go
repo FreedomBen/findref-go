@@ -105,6 +105,8 @@ func main() {
 	// add --ignore-case
 	// add mc for alias match-case
 	// add ic for alias ignore-case
+	// add --debug for turning on debug mode
+	// add -h|--hidden for searching hidden directories
 
 	fmt.Println("matchCase: ", *matchCasePtr)
 	fmt.Println("tail: ", flag.Args())
