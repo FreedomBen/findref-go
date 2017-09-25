@@ -3,7 +3,7 @@
 require 'fileutils'
 
 FR_VERSION = '0.0.1'.freeze
-GO_VERSION = '1.9'.freeze
+GO_VERSION = '1.9-alpine'.freeze
 
 OSES_ARCHES = {
   'linux' => %w(amd64 386 arm arm64),

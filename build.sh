@@ -21,7 +21,7 @@ for os in ${OSES[@]}; do
           --workdir /usr/src/myapp \
           --env GOOS=${os} \
           --env GOARCH=${arch} \
-          golang:1.9 go build -v
+          golang:1.9-alpine go build -v
         mkdir -p ${root_dir}/${os}/${arch}
         mv --force findref ${root_dir}/${os}/${arch}/
     done
