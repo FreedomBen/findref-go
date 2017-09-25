@@ -15,8 +15,10 @@ const Green = "\033[0;32m"
 const Purple = "\033[0;35m"
 const Restore = "\033[0m"
 
-const Debug = false
+var Debug bool = false
+var IncludeHidden bool = false
 
+var hiddenFileRegex *regexp.Regexp = regexp.MustCompile(`(^|\/)\.`)
 var matchRegex *regexp.Regexp = nil
 var fileFilter *regexp.Regexp = regexp.MustCompile(".*")
 
@@ -31,7 +33,7 @@ func usageAndExit() {
 
 func debug(message string) {
 	if Debug {
-		fmt.Println(Green + message + Restore)
+		fmt.Println(message)
 	}
 }
 
@@ -46,7 +48,13 @@ func passesFileFilter(path string) bool {
 
 func processFile(path string, info os.FileInfo, err error) error {
 	if passesFileFilter(path) {
-		debug(LightRed + "Processing " + Restore + Green + "file: " + Restore + Purple + path)
+		debug(Green + "Processing file: " + Restore + path)
+
+		// Ignore hidden files unless the IncludeHidden flag is set
+		if !IncludeHidden && hiddenFileRegex.MatchString(path) {
+		    debug(Green + "Hidden file '" + Restore + path + Green + "' not processed")
+		    return nil
+		}
 
 		file, err := os.Open(path)
 		// TODO: Handle err
@@ -64,7 +72,7 @@ func processFile(path string, info os.FileInfo, err error) error {
 			for _, el := range line {
 				if el == 0 {
 					// This is a binary file.  Skip it!
-					debug("Not processing binary file: " + path)
+					debug(Green + "Not processing binary file: " + Restore + path)
 					return nil
 				}
 			}
@@ -82,23 +90,42 @@ func processFile(path string, info os.FileInfo, err error) error {
 			return nil
 		}
 	} else {
-		debug("Ignoring file cause it doesn't match filter: " + path)
+		debug(Green + "Ignoring file cause it doesn't match filter: " + Restore + path)
 	}
 	// TODO:  Return error if relevant
 	return nil
 }
 
-func getMatchRegex(matchCase bool, usersRegex string) *regexp.Regexp {
-	// If -match-case is not set, figure out smartcase
-	if !matchCase && !regexp.MustCompile("[A-Z]").MatchString(usersRegex) {
+func getMatchRegex(ignoreCase bool, matchCase bool, usersRegex string) *regexp.Regexp {
+	// If ignore case is set, ignore the case of the regex.
+	// if match-case is not set, use smartcase which means if it's all lower case be case-insensitive,
+	// but if there's capitals then be case-sensitive
+	if ignoreCase || (!matchCase && !regexp.MustCompile("[A-Z]").MatchString(usersRegex)) {
 		return regexp.MustCompile("(?i)" + usersRegex) // make regex case insensitive
 	} else {
 		return regexp.MustCompile(usersRegex)
 	}
 }
 
+func determineMatchCase(matchCasePtr *bool, mcPtr *bool) {
+	if *mcPtr {
+		*matchCasePtr = true
+	}
+}
+
+func determineIgnoreCase(ignoreCasePtr *bool, icPtr *bool) {
+	if *icPtr {
+		*ignoreCasePtr = true
+	}
+}
+
 func main() {
 	matchCasePtr := flag.Bool("match-case", false, "Match regex case (if unset smart-case is used)")
+	mcPtr := flag.Bool("mc", false, "Alias for --match-case")
+	ignoreCasePtr := flag.Bool("ignore-case", false, "Ignore case in regex (overrides smart-case)")
+	icPtr := flag.Bool("ic", false, "Alias for --ignore-case")
+	debugPtr := flag.Bool("debug", false, "Enable debug mode")
+	hiddenPtr := flag.Bool("hidden", false, "Include hidden files and files in hidden directories")
 
 	flag.Parse()
 
@@ -108,7 +135,16 @@ func main() {
 	// add --debug for turning on debug mode
 	// add -h|--hidden for searching hidden directories
 
+	determineMatchCase(matchCasePtr, mcPtr)
+	determineIgnoreCase(ignoreCasePtr, icPtr)
+
+	IncludeHidden = *hiddenPtr
+	Debug = *debugPtr
+
 	fmt.Println("matchCase: ", *matchCasePtr)
+	fmt.Println("ignoreCase: ", *ignoreCasePtr)
+	fmt.Println("hidden: ", IncludeHidden)
+	fmt.Println("debug: ", Debug)
 	fmt.Println("tail: ", flag.Args())
 
 	rootDir := "."
@@ -120,7 +156,7 @@ func main() {
 		fmt.Println("Too many args")
 		usageAndExit()
 	} else {
-		matchRegex = getMatchRegex(*matchCasePtr, flag.Args()[0])
+		matchRegex = getMatchRegex(*ignoreCasePtr, *matchCasePtr, flag.Args()[0])
 
 		if len(flag.Args()) >= 2 {
 			rootDir = flag.Args()[1]
