@@ -122,6 +122,7 @@ func checkForMatches(path string) error {
 		debug(Red+"Error scanning line from file '"+path+"'. File will be skipped.  Err: "+Restore, err)
 		return FILE_PROCESSING_COMPLETE
 	}
+	return FILE_PROCESSING_COMPLETE
 }
 
 func processFile(path string, info os.FileInfo, err error) error {
@@ -175,6 +176,10 @@ func determineIgnoreCase(ignoreCasePtr *bool, icPtr *bool) {
 	}
 }
 
+func printVersionAndExit() {
+	fmt.Printf("%s%s%s%s%s%s", Cyan, "findref version ", Version, " released on ", Date, Restore)
+}
+
 func main() {
 	vPtr := flag.Bool("v", false, "Alias for --version")
 	mcPtr := flag.Bool("mc", false, "Alias for --match-case")
@@ -188,8 +193,7 @@ func main() {
 	flag.Parse()
 
 	if *vPtr || *versionPtr {
-		//fmt.Printf("findref version " + Version + " released on " + Date)
-		fmt.Printf("%s%s%s%s%s%s", Cyan, "findref version ", Version, " released on ", Date, Restore)
+		printVersionAndExit()
 		os.Exit(0)
 	}
 
