@@ -2,7 +2,6 @@ task default: 'build'
 
 desc 'Build README.md from README.md.erb'
 task :readme do
-  puts 'Building README.md'
   sh 'erb README.md.erb > README.md'
   #File.write('README.md', ERB.new(File.open('README.md.erb').read).result)
 end
