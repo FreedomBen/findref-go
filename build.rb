@@ -49,7 +49,7 @@ end
 def main
   OSES_ARCHES.each do |os, arches|
     arches.each do |arch|
-      dest_dir = "releases/#{FR_VERSION}/#{os}/#{arch}"
+      dest_dir = "findref-bin/#{FR_VERSION}/#{os}/#{arch}"
       cyan "Building findref v#{FR_VERSION} for #{os} #{arch}..."
       system(docker_run(os, arch))
       FileUtils.mkdir_p(dest_dir)

@@ -28,7 +28,7 @@ ARCHES=("amd64" "386")
 
 echo -e "${color_cyan}Building findref version '${VERSION}' for OSes '${OSES[@]}', and arches '${ARCHES[@]}'...${color_restore}"
 
-root_dir=releases/${VERSION}
+root_dir=findref-bin/${VERSION}
 for os in ${OSES[@]}; do
     for arch in ${ARCHES[@]}; do
         echo -e "${color_cyan}Building version ${VERSION} for OS ${os}, arch ${arch}${color_restore}"

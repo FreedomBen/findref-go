@@ -14,16 +14,15 @@ put it somewhere in your PATH.  I recommend /usr/local/bin:
   end
 
   def releases
-    # This is a bug because we need to check in findref-bin
-    retval = glob('releases/*')
-      .select{ |rel| File.directory?("releases/#{rel}") }
+    retval = glob('findref-bin/*')
+      .select{ |rel| File.directory?("findref-bin/#{rel}") }
       .map{ |rel| File.basename(rel) }
       .sort
     retval
   end
 
   def links(release, os)
-    glob("releases/#{release}/#{os}/*").map do |arch|
+    glob("findref-bin/#{release}/#{os}/*").map do |arch|
       "[#{arch}](https://github.com/FreedomBen/findref-bin/blob/master/#{release}/#{os}/#{arch}/#{os == 'windows' ? 'findref.exe' : 'findref'}?raw=true)"
     end
   end
@@ -50,7 +49,7 @@ put it somewhere in your PATH.  I recommend /usr/local/bin:
 <%= releases.map{ |r| release_line(r) }.join("\n") %>
 
 
-Alternatively, you can choose to build it yourself from source:
+Alternatively, you can build it yourself from source:
 
 ```bash
 go get github.com/FreedomBen/findref
